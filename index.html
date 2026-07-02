@@ -1,7 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>bowl. — a tasting menu for an audience of one</title>
-<meta name="description" content="The daily menu of a very serious restaurant that operates out of a kitchen and serves exactly one dog.">
+<meta name="description" content="The daily menu, service records, and press desk of a very serious restaurant that operates out of a kitchen and serves exactly one dog.">
+<meta name="theme-color" content="#f6f1e7">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="bowl.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&display=swap" rel="stylesheet">
@@ -11,6 +20,7 @@
     --ink: #211d17;
     --faded: #6f6555;
     --rule: #d8cfbe;
+    --card: #fbf8f1;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { background: var(--paper); }
@@ -20,15 +30,12 @@
     background: var(--paper);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
-    padding: clamp(2.5rem, 7vw, 6rem) 1.5rem 5rem;
+    padding: clamp(1.8rem, 5vw, 4rem) 1.5rem calc(6rem + env(safe-area-inset-bottom));
   }
-  .menu {
-    max-width: 38rem;
-    margin: 0 auto;
-  }
+  .wrap { max-width: 38rem; margin: 0 auto; }
 
-  /* masthead */
-  .masthead { text-align: center; }
+  /* headers */
+  .masthead { text-align: center; margin-bottom: 1rem; }
   .est {
     font-size: 0.7rem;
     letter-spacing: 0.32em;
@@ -43,11 +50,7 @@
     line-height: 1;
     margin: 0.35em 0 0.2em;
   }
-  .tagline {
-    font-style: italic;
-    font-size: 1.05rem;
-    color: var(--faded);
-  }
+  .tagline { font-style: italic; font-size: 1.05rem; color: var(--faded); }
   .address {
     margin-top: 1.4rem;
     font-size: 0.7rem;
@@ -55,17 +58,67 @@
     text-transform: uppercase;
     color: var(--faded);
   }
+  .mini-head { text-align: center; margin-bottom: 2.2rem; display: none; }
+  .mini-head .wordmark {
+    font-size: 1.9rem;
+    font-weight: 350;
+    font-variation-settings: "opsz" 144;
+  }
+  .mini-head .sub {
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--faded);
+  }
+  body:not([data-tab="today"]) .mini-head { display: block; }
 
   .flourish {
     text-align: center;
     color: var(--faded);
     letter-spacing: 0.8em;
-    margin: 2.8rem 0;
+    margin: 2.4rem 0;
     font-size: 0.8rem;
   }
 
-  /* sections */
-  section { margin-bottom: 3.2rem; }
+  /* tabs */
+  .tab { display: none; }
+  body[data-tab="today"]   #today,
+  body[data-tab="menu"]    #menu,
+  body[data-tab="service"] #service,
+  body[data-tab="reviews"] #reviews,
+  body[data-tab="reserve"] #reserve { display: block; }
+
+  nav {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: var(--paper);
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.4rem, 3vw, 1.6rem);
+    padding: 0.9rem 0.5rem calc(0.9rem + env(safe-area-inset-bottom));
+    z-index: 10;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--faded);
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.3rem;
+    position: relative;
+  }
+  nav a.active { color: var(--ink); }
+  nav a.active::before {
+    content: "·";
+    position: absolute;
+    top: -1.05em; left: 50%;
+    transform: translateX(-50%);
+    letter-spacing: 0;
+  }
+
+  /* menu sections */
+  section.course { margin-bottom: 3.2rem; }
   h2 {
     text-align: center;
     font-size: 0.78rem;
@@ -81,39 +134,18 @@
     color: var(--faded);
     margin-bottom: 1.8rem;
   }
-  section > ul { list-style: none; }
-  li + li { margin-top: 1.6rem; }
-
-  .line {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-  }
-  .dish {
-    font-size: 1.12rem;
-    font-weight: 500;
-    white-space: nowrap;
-  }
+  section.course > ul { list-style: none; }
+  section.course li + li { margin-top: 1.6rem; }
+  .line { display: flex; align-items: baseline; gap: 0.6rem; }
+  .dish { font-size: 1.12rem; font-weight: 500; white-space: nowrap; }
   .leader {
     flex: 1;
     border-bottom: 1px dotted var(--rule);
     transform: translateY(-0.25em);
     min-width: 1.5rem;
   }
-  .price {
-    font-style: italic;
-    font-size: 0.9rem;
-    color: var(--faded);
-    white-space: nowrap;
-  }
-  .desc {
-    font-size: 0.9rem;
-    color: var(--faded);
-    max-width: 30rem;
-    margin-top: 0.15rem;
-  }
-
-  /* policies */
+  .price { font-style: italic; font-size: 0.9rem; color: var(--faded); white-space: nowrap; }
+  .desc { font-size: 0.9rem; color: var(--faded); max-width: 30rem; margin-top: 0.15rem; }
   .policies p {
     text-align: center;
     font-size: 0.9rem;
@@ -121,28 +153,110 @@
     max-width: 28rem;
     margin: 0.55rem auto 0;
   }
-  .policies p strong {
-    color: var(--ink);
-    font-weight: 500;
-    font-style: normal;
+  .policies p strong { color: var(--ink); font-weight: 500; }
+
+  /* cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    padding: 1.6rem 1.4rem;
+    text-align: center;
+    margin-top: 1.2rem;
+  }
+  .card h3 {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--faded);
+    margin-bottom: 0.8rem;
+  }
+  .special-text {
+    font-size: 1.35rem;
+    font-weight: 350;
+    font-style: italic;
+    line-height: 1.4;
+  }
+  .small-note {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--faded);
+    margin-top: 0.9rem;
+  }
+  .today-date {
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--faded);
+    margin-bottom: 0.4rem;
   }
 
-  /* review + footer */
-  .review {
+  button {
+    font-family: inherit;
+    font-size: 0.7rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 0.85rem 1.6rem;
+    margin-top: 1.1rem;
+    cursor: pointer;
+  }
+  button.ghost {
+    background: none;
+    color: var(--faded);
+    border: 1px solid var(--rule);
+  }
+  button:active { opacity: 0.75; }
+  .linkish {
+    background: none;
+    border: none;
+    color: var(--faded);
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.78rem;
+    text-decoration: underline;
+    padding: 0.4rem;
+    margin-top: 0.5rem;
+  }
+
+  .status-line { font-size: 1.15rem; font-weight: 350; }
+  .status-line em { font-style: italic; }
+
+  .ledger-count { font-size: 2.6rem; font-weight: 350; line-height: 1.1; }
+  .ledger-sub { font-size: 0.78rem; font-style: italic; color: var(--faded); }
+
+  .history { list-style: none; margin-top: 1rem; }
+  .history li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--faded);
+    padding: 0.35rem 0;
+    text-align: left;
+  }
+  .history .leader { transform: translateY(-0.2em); }
+
+  /* reviews */
+  .review-card {
     text-align: center;
     border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
     padding: 2rem 1rem;
-    margin: 3.5rem 0 2.5rem;
+    margin-top: 1.6rem;
   }
   .stars { letter-spacing: 0.35em; font-size: 0.85rem; }
-  .review blockquote {
+  .review-card blockquote {
     font-style: italic;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 350;
     margin-top: 0.7rem;
   }
-  .review cite {
+  .review-card cite {
     display: block;
     font-style: normal;
     font-size: 0.7rem;
@@ -151,12 +265,43 @@
     color: var(--faded);
     margin-top: 0.8rem;
   }
+
+  /* reserve form */
+  form { margin-top: 1.4rem; }
+  .field { margin-bottom: 1.2rem; text-align: left; }
+  .field label {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--faded);
+    margin-bottom: 0.35rem;
+  }
+  .field input, .field select {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--rule);
+    background: var(--card);
+    color: var(--ink);
+  }
+  .center { text-align: center; }
+
   footer {
     text-align: center;
     font-size: 0.7rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--faded);
+    margin-top: 3rem;
+  }
+  .install-hint {
+    text-align: center;
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--faded);
+    margin-top: 2.2rem;
   }
 
   @media (max-width: 480px) {
@@ -164,119 +309,455 @@
     .dish { white-space: normal; }
   }
 </style>
+</head>
+<body data-tab="today">
+<div class="wrap">
 
-<main class="menu">
-  <header class="masthead">
-    <p class="est">est. the day we brought the dog home</p>
-    <h1>bowl.</h1>
-    <p class="tagline">a tasting menu for an audience of one</p>
-    <p class="address">the kitchen &nbsp;·&nbsp; by the fridge &nbsp;·&nbsp; walk-ins never</p>
+  <header class="mini-head">
+    <div class="wordmark">bowl.</div>
+    <div class="sub">a tasting menu for an audience of one</div>
   </header>
 
-  <p class="flourish" aria-hidden="true">···</p>
+  <!-- ===================== TODAY ===================== -->
+  <div class="tab" id="today">
+    <header class="masthead">
+      <p class="est">est. the day we brought the dog home</p>
+      <h1>bowl.</h1>
+      <p class="tagline">a tasting menu for an audience of one</p>
+      <p class="address">the kitchen &nbsp;·&nbsp; by the fridge &nbsp;·&nbsp; walk-ins never</p>
+    </header>
 
-  <section>
-    <h2>Morning Service</h2>
-    <p class="service-note">seating begins at 7:00 sharp, enforced by a wet nose</p>
-    <ul>
-      <li>
-        <div class="line"><span class="dish">Kibble, First Pressing</span><span class="leader"></span><span class="price">two sits</span></div>
-        <p class="desc">the house dry cure, hand-scooped, served in the good bowl. tasting notes of chicken, morning, and ambition.</p>
-      </li>
-      <li>
-        <div class="line"><span class="dish">Bone Broth Float</span><span class="leader"></span><span class="price">one paw</span></div>
-        <p class="desc">a table-side pour over the above. consistently received with visible emotion.</p>
-      </li>
-      <li>
-        <div class="line"><span class="dish">Still Water</span><span class="leader"></span><span class="price">complimentary</span></div>
-        <p class="desc">room temperature, unfiltered, splashed liberally onto the floor as tribute.</p>
-      </li>
-    </ul>
-  </section>
+    <p class="flourish" aria-hidden="true">···</p>
 
-  <section>
-    <h2>All Day</h2>
-    <p class="service-note">available whenever a human enters the kitchen for any reason</p>
-    <ul>
-      <li>
-        <div class="line"><span class="dish">The Cheese Tax</span><span class="leader"></span><span class="price">market rate</span></div>
-        <p class="desc">levied automatically whenever cheddar is handled anywhere on the premises. non-negotiable. the auditor is already watching.</p>
-      </li>
-      <li>
-        <div class="line"><span class="dish">Peanut Butter, Spoon Service</span><span class="leader"></span><span class="price">one trick, dealer&rsquo;s choice</span></div>
-        <p class="desc">supervised. contemplative. a full sensory experience lasting several minutes longer than any other course.</p>
-      </li>
-      <li>
-        <div class="line"><span class="dish">Carrot, Chilled</span><span class="leader"></span><span class="price">free, and still overpriced</span></div>
-        <p class="desc">a single crudité for the health-conscious diner. frequently declined. perpetually offered.</p>
-      </li>
-      <li>
-        <div class="line"><span class="dish">Blueberries, Three</span><span class="leader"></span><span class="price">one sit, two spins</span></div>
-        <p class="desc">hand-fed, caught mid-air or not at all. misses are recorded but not held against the house.</p>
-      </li>
-    </ul>
-  </section>
+    <p class="today-date" id="today-date"></p>
 
-  <section>
-    <h2>Evening Service</h2>
-    <p class="service-note">18:00 precisely — lateness pursued through official channels (staring)</p>
-    <ul>
-      <li>
-        <div class="line"><span class="dish">Kibble, Second Pressing</span><span class="leader"></span><span class="price">two sits, one down</span></div>
-        <p class="desc">the morning&rsquo;s triumph, revisited. identical in every way, greeted like a stranger&rsquo;s wedding buffet.</p>
-      </li>
-      <li>
-        <div class="line"><span class="dish">Sunday Prix Fixe: Chicken &amp; Rice</span><span class="leader"></span><span class="price">gastroenterologist&rsquo;s choice</span></div>
-        <p class="desc">poached, unseasoned, medically endorsed. our most requested tasting menu, for reasons we do not discuss at the table.</p>
-      </li>
-    </ul>
-  </section>
+    <div class="card">
+      <h3>Tonight&rsquo;s Special</h3>
+      <p class="special-text" id="daily-special"></p>
+      <p class="small-note">available while supplies last (they will not last)</p>
+    </div>
 
-  <section>
-    <h2>From the Floor</h2>
-    <p class="service-note">foraged · seasonal · availability varies</p>
-    <ul>
-      <li>
-        <div class="line"><span class="dish">Whatever Just Fell</span><span class="leader"></span><span class="price">speed is the only currency</span></div>
-        <p class="desc">the chef&rsquo;s loss is the patron&rsquo;s omakase. served floor temperature, within 0.4 seconds.</p>
-      </li>
-      <li>
-        <div class="line"><span class="dish">Counter Vigil</span><span class="leader"></span><span class="price">patience</span></div>
-        <p class="desc">not a dish. a discipline. conducted nightly beneath the cutting board, in silence, in hope.</p>
-      </li>
-    </ul>
-  </section>
+    <div class="card">
+      <h3>Soup du Jour</h3>
+      <p class="special-text">Water. Again.</p>
+    </div>
 
-  <section>
-    <h2>Dessert</h2>
-    <ul>
-      <li>
-        <div class="line"><span class="dish">Dental Chew, Presented Tableside</span><span class="leader"></span><span class="price">one shake</span></div>
-        <p class="desc">carried ceremonially to a private dining area (the rug) and savored for upwards of forty-five seconds.</p>
-      </li>
-      <li>
-        <div class="line"><span class="dish">&ldquo;Who&rsquo;s a Good Dog&rdquo;</span><span class="leader"></span><span class="price">priceless</span></div>
-        <p class="desc">a spoken-word course. zero calories. the answer is known. the question is asked anyway. five stars, always.</p>
-      </li>
-    </ul>
-  </section>
+    <div class="card">
+      <h3>Current Wait</h3>
+      <p class="special-text">0 minutes</p>
+      <p class="small-note">the party is already at the table. the party never left the table.</p>
+    </div>
 
-  <section class="policies">
-    <h2>House Policies</h2>
-    <p><strong>dress code</strong> — collar required. jingling tags considered formalwear.</p>
-    <p><strong>gratuity</strong> — included, in the form of ear scratches. additional tipping (belly rubs) welcomed.</p>
-    <p><strong>substitutions</strong> — none. except all of them, immediately, if you appear to be eating something better.</p>
-    <p><strong>byob</strong> — bring your own ball. it will be confiscated at the door and returned soggy.</p>
-    <p><strong>seating</strong> — the only table is permanently reserved.</p>
-  </section>
-
-  <div class="review">
-    <p class="stars" aria-label="five stars">★★★★★</p>
-    <blockquote>&ldquo;Inhaled the entire menu in nine seconds. No notes. Will stare again.&rdquo;</blockquote>
-    <cite>— the regular, every single day</cite>
+    <p class="install-hint">best enjoyed installed &mdash; share&nbsp;&rarr;&nbsp;add to home screen</p>
   </div>
 
-  <footer>
-    no reservations · no substitutions · no self-control
-  </footer>
-</main>
+  <!-- ===================== MENU ===================== -->
+  <div class="tab" id="menu">
+    <section class="course">
+      <h2>Morning Service</h2>
+      <p class="service-note">seating begins at 7:00 sharp, enforced by a wet nose</p>
+      <ul>
+        <li>
+          <div class="line"><span class="dish">Kibble, First Pressing</span><span class="leader"></span><span class="price">two sits</span></div>
+          <p class="desc">the house dry cure, hand-scooped, served in the good bowl. tasting notes of chicken, morning, and ambition.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Bone Broth Float</span><span class="leader"></span><span class="price">one paw</span></div>
+          <p class="desc">a table-side pour over the above. consistently received with visible emotion.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Still Water</span><span class="leader"></span><span class="price">complimentary</span></div>
+          <p class="desc">room temperature, unfiltered, splashed liberally onto the floor as tribute.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="course">
+      <h2>All Day</h2>
+      <p class="service-note">available whenever a human enters the kitchen for any reason</p>
+      <ul>
+        <li>
+          <div class="line"><span class="dish">The Cheese Tax</span><span class="leader"></span><span class="price">market rate</span></div>
+          <p class="desc">levied automatically whenever cheddar is handled anywhere on the premises. non-negotiable. the auditor is already watching.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Peanut Butter, Spoon Service</span><span class="leader"></span><span class="price">one trick, dealer&rsquo;s choice</span></div>
+          <p class="desc">supervised. contemplative. a full sensory experience lasting several minutes longer than any other course.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Carrot, Chilled</span><span class="leader"></span><span class="price">free, and still overpriced</span></div>
+          <p class="desc">a single crudité for the health-conscious diner. frequently declined. perpetually offered.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Blueberries, Three</span><span class="leader"></span><span class="price">one sit, two spins</span></div>
+          <p class="desc">hand-fed, caught mid-air or not at all. misses are recorded but not held against the house.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="course">
+      <h2>Evening Service</h2>
+      <p class="service-note">18:00 precisely &mdash; lateness pursued through official channels (staring)</p>
+      <ul>
+        <li>
+          <div class="line"><span class="dish">Kibble, Second Pressing</span><span class="leader"></span><span class="price">two sits, one down</span></div>
+          <p class="desc">the morning&rsquo;s triumph, revisited. identical in every way, greeted like a stranger&rsquo;s wedding buffet.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Sunday Prix Fixe: Chicken &amp; Rice</span><span class="leader"></span><span class="price">gastroenterologist&rsquo;s choice</span></div>
+          <p class="desc">poached, unseasoned, medically endorsed. our most requested tasting menu, for reasons we do not discuss at the table.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="course">
+      <h2>From the Floor</h2>
+      <p class="service-note">foraged · seasonal · availability varies</p>
+      <ul>
+        <li>
+          <div class="line"><span class="dish">Whatever Just Fell</span><span class="leader"></span><span class="price">speed is the only currency</span></div>
+          <p class="desc">the chef&rsquo;s loss is the patron&rsquo;s omakase. served floor temperature, within 0.4 seconds.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Counter Vigil</span><span class="leader"></span><span class="price">patience</span></div>
+          <p class="desc">not a dish. a discipline. conducted nightly beneath the cutting board, in silence, in hope.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="course">
+      <h2>Dessert</h2>
+      <ul>
+        <li>
+          <div class="line"><span class="dish">Dental Chew, Presented Tableside</span><span class="leader"></span><span class="price">one shake</span></div>
+          <p class="desc">carried ceremonially to a private dining area (the rug) and savored for upwards of forty-five seconds.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">&ldquo;Who&rsquo;s a Good Dog&rdquo;</span><span class="leader"></span><span class="price">priceless</span></div>
+          <p class="desc">a spoken-word course. zero calories. the answer is known. the question is asked anyway. five stars, always.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="course policies">
+      <h2>House Policies</h2>
+      <p><strong>dress code</strong> &mdash; collar required. jingling tags considered formalwear.</p>
+      <p><strong>gratuity</strong> &mdash; included, in the form of ear scratches. additional tipping (belly rubs) welcomed.</p>
+      <p><strong>substitutions</strong> &mdash; none. except all of them, immediately, if you appear to be eating something better.</p>
+      <p><strong>byob</strong> &mdash; bring your own ball. it will be confiscated at the door and returned soggy.</p>
+      <p><strong>seating</strong> &mdash; the only table is permanently reserved.</p>
+    </section>
+  </div>
+
+  <!-- ===================== SERVICE ===================== -->
+  <div class="tab" id="service">
+    <h2>Service Record</h2>
+    <p class="service-note">the official ledger of the establishment</p>
+
+    <div class="card">
+      <h3>Morning Service</h3>
+      <p class="status-line" id="breakfast-status"></p>
+      <button id="breakfast-btn">mark breakfast served</button>
+      <div><button class="linkish" id="breakfast-undo" hidden>strike from the record</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Evening Service</h3>
+      <p class="status-line" id="dinner-status"></p>
+      <button id="dinner-btn">mark dinner served</button>
+      <div><button class="linkish" id="dinner-undo" hidden>strike from the record</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Cheese Tax Ledger</h3>
+      <p class="ledger-count" id="cheese-today">0</p>
+      <p class="ledger-sub">taxes levied today</p>
+      <p class="small-note" id="cheese-lifetime"></p>
+      <button id="cheese-btn">levy cheese tax</button>
+    </div>
+
+    <div class="card">
+      <h3>Recent Service</h3>
+      <ul class="history" id="history"></ul>
+      <p class="small-note">records are kept per device, in the tradition of small establishments with one notebook.</p>
+    </div>
+  </div>
+
+  <!-- ===================== REVIEWS ===================== -->
+  <div class="tab" id="reviews">
+    <h2>Press Desk</h2>
+    <p class="service-note">all reviews filed by our sole critic, who has also eaten mulch</p>
+
+    <div class="center">
+      <button id="review-btn">request a review</button>
+    </div>
+
+    <div class="review-card" id="review-card">
+      <p class="stars" aria-label="five stars">★★★★★</p>
+      <blockquote id="review-text">&ldquo;Inhaled the entire menu in nine seconds. No notes. Will stare again.&rdquo;</blockquote>
+      <cite>&mdash; the regular</cite>
+    </div>
+
+    <p class="small-note center" style="margin-top:1.2rem">the critic&rsquo;s independence is not in question. the critic&rsquo;s judgment is.</p>
+  </div>
+
+  <!-- ===================== RESERVE ===================== -->
+  <div class="tab" id="reserve">
+    <h2>Reservations</h2>
+    <p class="service-note">we thank you for your interest in dining at bowl.</p>
+
+    <form id="reserve-form">
+      <div class="field">
+        <label for="r-name">name</label>
+        <input id="r-name" type="text" autocomplete="name" placeholder="your name">
+      </div>
+      <div class="field">
+        <label for="r-date">requested date</label>
+        <input id="r-date" type="date">
+      </div>
+      <div class="field">
+        <label for="r-party">party size</label>
+        <select id="r-party">
+          <option>1</option><option>2</option><option>3</option>
+          <option>4</option><option>5+</option>
+        </select>
+      </div>
+      <div class="center"><button type="submit">request table</button></div>
+    </form>
+
+    <div class="card" id="reserve-result" hidden>
+      <h3>Regarding Your Request</h3>
+      <p class="special-text" id="reserve-text"></p>
+      <p class="small-note">this decision is final and may not be appealed, except with ham.</p>
+    </div>
+  </div>
+
+  <footer>no reservations · no substitutions · no self-control</footer>
+</div>
+
+<nav>
+  <a href="#today" data-tab="today">Today</a>
+  <a href="#menu" data-tab="menu">Menu</a>
+  <a href="#service" data-tab="service">Service</a>
+  <a href="#reviews" data-tab="reviews">Reviews</a>
+  <a href="#reserve" data-tab="reserve">Reserve</a>
+</nav>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- tabs ---------- */
+  var TABS = ["today", "menu", "service", "reviews", "reserve"];
+  function showTab() {
+    var tab = location.hash.replace("#", "");
+    if (TABS.indexOf(tab) === -1) tab = "today";
+    document.body.dataset.tab = tab;
+    document.querySelectorAll("nav a").forEach(function (a) {
+      a.classList.toggle("active", a.dataset.tab === tab);
+    });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", showTab);
+  showTab();
+
+  /* ---------- today ---------- */
+  var SPECIALS = [
+    "The same kibble, plated with confidence.",
+    "Kibble, but a leaf blew into the bowl. Seasonal.",
+    "A tasting flight of one water.",
+    "Chef’s whim: kibble, served four minutes early. Chaos.",
+    "Deconstructed dinner — kibble on the floor, artfully scattered.",
+    "Green bean amuse-bouche. Take it or leave it. (It was left.)",
+    "Kibble au naturel, garnished with anticipation.",
+    "Surprise course: a pill wrapped in cheese. The house denies everything.",
+    "Yesterday’s kibble recipe, faithfully reproduced.",
+    "An egg. Scrambled. A holiday, apparently.",
+    "Kibble with a splash of broth — the chef is feeling generous, or guilty.",
+    "The slow-feeder tasting experience: same menu, more suffering.",
+    "Trainer’s selection: high-value morsels, earned, resentfully.",
+    "Kibble, aged eleven hours in the original bag.",
+    "Off-menu floor risotto (a dropped noodle).",
+    "The chef’s own sandwich, watched intently. Not served. Never served."
+  ];
+  var now = new Date();
+  var dayKey = now.getFullYear() * 372 + now.getMonth() * 31 + now.getDate();
+  document.getElementById("daily-special").textContent =
+    SPECIALS[dayKey % SPECIALS.length];
+  document.getElementById("today-date").textContent =
+    now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+
+  /* ---------- storage helpers ---------- */
+  function load(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+    catch (e) { return fallback; }
+  }
+  function save(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+  }
+  function isToday(ts) {
+    var d = new Date(ts), t = new Date();
+    return d.getFullYear() === t.getFullYear() &&
+           d.getMonth() === t.getMonth() &&
+           d.getDate() === t.getDate();
+  }
+  function fmtTime(ts) {
+    return new Date(ts).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  }
+  function fmtDay(ts) {
+    return new Date(ts).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  }
+
+  /* ---------- service log ---------- */
+  var LOG_KEY = "bowl.serviceLog";
+  var meals = {
+    breakfast: { verb: "Breakfast", notYet: "not yet served — the patron is aware." },
+    dinner:    { verb: "Dinner",    notYet: "not yet served — a formal complaint is being drafted." }
+  };
+
+  function renderService() {
+    var log = load(LOG_KEY, []);
+    Object.keys(meals).forEach(function (meal) {
+      var entry = null;
+      for (var i = log.length - 1; i >= 0; i--) {
+        if (log[i].meal === meal && isToday(log[i].ts)) { entry = log[i]; break; }
+      }
+      var status = document.getElementById(meal + "-status");
+      var btn = document.getElementById(meal + "-btn");
+      var undo = document.getElementById(meal + "-undo");
+      if (entry) {
+        status.innerHTML = "served at <em>" + fmtTime(entry.ts) + "</em>. the plate was reviewed favorably.";
+        btn.hidden = true;
+        undo.hidden = false;
+      } else {
+        status.textContent = meals[meal].notYet;
+        btn.hidden = false;
+        undo.hidden = true;
+      }
+    });
+
+    var hist = document.getElementById("history");
+    hist.innerHTML = "";
+    var recent = log.slice(-10).reverse();
+    if (!recent.length) {
+      hist.innerHTML = '<li><span style="font-style:italic">the ledger is empty. the establishment is new, or the staff negligent.</span></li>';
+    }
+    recent.forEach(function (e) {
+      var li = document.createElement("li");
+      var label = document.createElement("span");
+      label.textContent = meals[e.meal].verb.toLowerCase();
+      var leader = document.createElement("span");
+      leader.className = "leader";
+      var when = document.createElement("span");
+      when.textContent = fmtDay(e.ts) + ", " + fmtTime(e.ts);
+      li.appendChild(label); li.appendChild(leader); li.appendChild(when);
+      hist.appendChild(li);
+    });
+  }
+
+  Object.keys(meals).forEach(function (meal) {
+    document.getElementById(meal + "-btn").addEventListener("click", function () {
+      var log = load(LOG_KEY, []);
+      log.push({ meal: meal, ts: Date.now() });
+      save(LOG_KEY, log.slice(-500));
+      renderService();
+    });
+    document.getElementById(meal + "-undo").addEventListener("click", function () {
+      var log = load(LOG_KEY, []);
+      for (var i = log.length - 1; i >= 0; i--) {
+        if (log[i].meal === meal && isToday(log[i].ts)) { log.splice(i, 1); break; }
+      }
+      save(LOG_KEY, log);
+      renderService();
+    });
+  });
+
+  /* ---------- cheese tax ---------- */
+  var CHEESE_KEY = "bowl.cheeseEvents";
+  function renderCheese() {
+    var events = load(CHEESE_KEY, []);
+    var lifetime = load("bowl.cheeseLifetime", 0);
+    var today = events.filter(isToday).length;
+    document.getElementById("cheese-today").textContent = today;
+    document.getElementById("cheese-lifetime").textContent =
+      lifetime + " collected since records began. none successfully evaded.";
+  }
+  document.getElementById("cheese-btn").addEventListener("click", function () {
+    var events = load(CHEESE_KEY, []).filter(isToday);
+    events.push(Date.now());
+    save(CHEESE_KEY, events);
+    save("bowl.cheeseLifetime", load("bowl.cheeseLifetime", 0) + 1);
+    renderCheese();
+  });
+
+  renderService();
+  renderCheese();
+
+  /* ---------- review generator ---------- */
+  var OPENERS = [
+    "Arrived early. Sat immediately.",
+    "Was not offered a wine list. Stayed anyway.",
+    "The maître d’ (a human) showed me to my usual table (the floor).",
+    "Came for the kibble. Stayed because I live here.",
+    "This review was filed under protest — dinner ran ninety seconds late."
+  ];
+  var DISHES = [
+    "The kibble was a triumph, again.",
+    "The cheese course arrived only after sustained legal pressure.",
+    "The carrot was an insult. I ate it anyway.",
+    "The peanut butter spoon deserves its own review, and will get one.",
+    "Something fell during prep. I handled it."
+  ];
+  var AMBIENCE = [
+    "Ambience: a floor. Service: eventually. Atmosphere: charged.",
+    "Service was slow until I sighed audibly.",
+    "The staff maintained eye contact throughout, as is proper.",
+    "Portions remain a human-rights issue.",
+    "Music: a dishwasher. I danced anyway (spun twice)."
+  ];
+  var CLOSERS = [
+    "Will stare again.",
+    "Nine seconds. No notes.",
+    "Compliments to the chef, whom I love unconditionally and would betray for ham.",
+    "A destination restaurant, in that I am always already at the destination.",
+    "One star briefly withheld, then returned. I can’t stay mad."
+  ];
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  document.getElementById("review-btn").addEventListener("click", function () {
+    document.getElementById("review-text").textContent =
+      "“" + pick(OPENERS) + " " + pick(DISHES) + " " + pick(AMBIENCE) + " " + pick(CLOSERS) + "”";
+  });
+
+  /* ---------- reservations ---------- */
+  var REJECTIONS = [
+    "we regret that bowl. is fully committed on that date, and every date, in perpetuity.",
+    "our single table is held indefinitely by a party of one with a standing reservation and no intention of leaving.",
+    "the waitlist is closed. the waitlist has always been closed. there is no waitlist.",
+    "your request was reviewed by the patron and declined, on the grounds that they do not share.",
+    "we can offer you a place at the counter vigil: standing, no food, tremendous hope.",
+    "that date is unavailable. december 25th included. especially december 25th."
+  ];
+  document.getElementById("reserve-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = document.getElementById("r-name").value.trim();
+    var party = document.getElementById("r-party").value;
+    var msg = pick(REJECTIONS);
+    if (name) msg = "Regrettably, " + name + ": " + msg;
+    else msg = "Regrettably: " + msg;
+    if (party !== "1") {
+      msg += " (also — a party of " + party + "? the dining room seats one.)";
+    }
+    document.getElementById("reserve-text").textContent = msg;
+    var result = document.getElementById("reserve-result");
+    result.hidden = false;
+    result.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  /* ---------- service worker ---------- */
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  }
+})();
+</script>
+</body>
+</html>

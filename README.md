@@ -31,6 +31,16 @@ Our patron is a dog. "Food-motivated" doesn't cover it — this is a diner who t
 > ★★★★★ — "I have also eaten mulch, so calibrate accordingly."
 > — *The Regular, in the interest of transparency*
 
+## The app
+
+bowl. is now a full establishment, not merely a menu. On a phone, open the site, tap share → **Add to Home Screen**, and it installs like a real app — icon, full screen, the works. Front of house includes:
+
+- **Today** — the daily special, rotated nightly by a committee of one algorithm. Everyone in the family sees the same special. The soup is water. The wait is 0 minutes; the party is already at the table.
+- **Menu** — the full carte, unchanged, unchanging, rapturously received twice a day.
+- **Service** — the official ledger. Mark breakfast and dinner served (finally, an answer to "did anyone feed the dog?"), and record each Cheese Tax as it is levied. Records are kept per device, in the tradition of small establishments with one notebook.
+- **Reviews** — the press desk. Request a fresh review from our sole critic at any time. It will be five stars. It is always five stars.
+- **Reserve** — a fully functioning reservation system, in the sense that it functions and refuses everyone.
+
 ## Frequently asked questions
 
 **Do you take reservations?**
