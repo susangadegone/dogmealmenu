@@ -192,6 +192,25 @@
     margin-bottom: 0.4rem;
   }
 
+  .portrait-frame {
+    aspect-ratio: 1;
+    max-width: 220px;
+    margin: 0 auto 0.8rem;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.8rem;
+  }
+  .portrait-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
   button {
     font-family: inherit;
     font-size: 0.7rem;
@@ -332,6 +351,17 @@
     <p class="today-date" id="today-date"></p>
 
     <div class="card">
+      <h3>The Regular</h3>
+      <div class="portrait-frame">
+        <img id="portrait-img" alt="the regular, dining" hidden>
+        <p class="small-note" id="portrait-empty">no portrait on file. the walls are bare and the house has opinions about it.</p>
+      </div>
+      <input type="file" accept="image/*" id="portrait-input" hidden>
+      <button class="ghost" id="portrait-add">add a portrait</button>
+      <div><button class="linkish" id="portrait-remove" hidden>retire this portrait</button></div>
+    </div>
+
+    <div class="card">
       <h3>Tonight&rsquo;s Special</h3>
       <p class="special-text" id="daily-special"></p>
       <p class="small-note">available while supplies last (they will not last)</p>
@@ -439,6 +469,25 @@
       </ul>
     </section>
 
+    <section class="course">
+      <h2>The Pharmacy</h2>
+      <p class="service-note">administered with cheese, under protest, precisely on schedule</p>
+      <ul>
+        <li>
+          <div class="line"><span class="dish">Heartworm Chew</span><span class="leader"></span><span class="price">monthly, non-negotiable</span></div>
+          <p class="desc">disguised as a treat. fooling no one. eaten anyway, out of professional courtesy.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Joint Supplement</span><span class="leader"></span><span class="price">daily, with breakfast</span></div>
+          <p class="desc">folded into the first pressing. undetected, allegedly.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">The Pill in the Cheese</span><span class="leader"></span><span class="price">as prescribed</span></div>
+          <p class="desc">a compounding of two great house traditions: medicine, and the Cheese Tax. see: Service, for the official record.</p>
+        </li>
+      </ul>
+    </section>
+
     <section class="course policies">
       <h2>House Policies</h2>
       <p><strong>dress code</strong> &mdash; collar required. jingling tags considered formalwear.</p>
@@ -474,6 +523,23 @@
       <p class="ledger-sub">taxes levied today</p>
       <p class="small-note" id="cheese-lifetime"></p>
       <button id="cheese-btn">levy cheese tax</button>
+    </div>
+
+    <div class="card">
+      <h3>The Pharmacy</h3>
+      <p class="status-line" id="pharmacy-status"></p>
+      <div class="field" style="margin-top:1rem">
+        <label for="pharmacy-med">medication</label>
+        <input id="pharmacy-med" list="med-suggestions" placeholder="e.g. heartworm chew" autocomplete="off">
+        <datalist id="med-suggestions">
+          <option value="Heartworm Chew"></option>
+          <option value="Joint Supplement"></option>
+          <option value="Allergy Pill"></option>
+          <option value="Flea &amp; Tick"></option>
+        </datalist>
+      </div>
+      <button id="pharmacy-btn">log dose</button>
+      <ul class="history" id="pharmacy-history"></ul>
     </div>
 
     <div class="card">
@@ -587,6 +653,86 @@
   document.getElementById("today-date").textContent =
     now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
+  /* ---------- portrait gallery ---------- */
+  var GALLERY_KEY = "bowl.gallery";
+  var MAX_PHOTOS = 12;
+  var MAX_DIM = 900;
+
+  function loadGallery() {
+    try { return JSON.parse(localStorage.getItem(GALLERY_KEY)) || []; }
+    catch (e) { return []; }
+  }
+  function saveGallery(arr) {
+    try { localStorage.setItem(GALLERY_KEY, JSON.stringify(arr)); return true; }
+    catch (e) { return false; }
+  }
+
+  function renderPortrait() {
+    var gallery = loadGallery();
+    var img = document.getElementById("portrait-img");
+    var empty = document.getElementById("portrait-empty");
+    var removeBtn = document.getElementById("portrait-remove");
+    if (!gallery.length) {
+      img.hidden = true;
+      img.removeAttribute("src");
+      delete img.dataset.idx;
+      empty.hidden = false;
+      removeBtn.hidden = true;
+      return;
+    }
+    var idx = Math.floor(Math.random() * gallery.length);
+    img.src = gallery[idx].data;
+    img.dataset.idx = idx;
+    img.hidden = false;
+    empty.hidden = true;
+    removeBtn.hidden = false;
+  }
+
+  document.getElementById("portrait-add").addEventListener("click", function () {
+    document.getElementById("portrait-input").click();
+  });
+
+  document.getElementById("portrait-input").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var imgEl = new Image();
+      imgEl.onload = function () {
+        var scale = Math.min(1, MAX_DIM / Math.max(imgEl.width, imgEl.height));
+        var w = Math.round(imgEl.width * scale);
+        var h = Math.round(imgEl.height * scale);
+        var canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(imgEl, 0, 0, w, h);
+        var dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        var gallery = loadGallery();
+        gallery.push({ id: Date.now(), data: dataUrl });
+        if (gallery.length > MAX_PHOTOS) gallery = gallery.slice(gallery.length - MAX_PHOTOS);
+        if (saveGallery(gallery)) {
+          renderPortrait();
+        } else {
+          alert("couldn't save that portrait — storage is full. try retiring an old one first.");
+        }
+      };
+      imgEl.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("portrait-remove").addEventListener("click", function () {
+    var img = document.getElementById("portrait-img");
+    var idx = Number(img.dataset.idx);
+    var gallery = loadGallery();
+    gallery.splice(idx, 1);
+    saveGallery(gallery);
+    renderPortrait();
+  });
+
+  renderPortrait();
+
   /* ---------- storage helpers ---------- */
   function load(key, fallback) {
     try { return JSON.parse(localStorage.getItem(key)) || fallback; }
@@ -692,6 +838,48 @@
 
   renderService();
   renderCheese();
+
+  /* ---------- pharmacy ---------- */
+  var PHARMACY_KEY = "bowl.pharmacyLog";
+  function renderPharmacy() {
+    var log = load(PHARMACY_KEY, []);
+    var status = document.getElementById("pharmacy-status");
+    var last = log[log.length - 1];
+    if (last) {
+      status.innerHTML = "last dose: <em>" + last.med + "</em>, " + fmtDay(last.ts) + " at " + fmtTime(last.ts) + ".";
+    } else {
+      status.textContent = "no doses logged yet — the medicine cabinet judges silently.";
+    }
+
+    var hist = document.getElementById("pharmacy-history");
+    hist.innerHTML = "";
+    var recent = log.slice(-6).reverse();
+    if (!recent.length) {
+      hist.innerHTML = '<li><span style="font-style:italic">the pharmacy log is empty.</span></li>';
+    }
+    recent.forEach(function (e) {
+      var li = document.createElement("li");
+      var label = document.createElement("span");
+      label.textContent = e.med;
+      var leader = document.createElement("span");
+      leader.className = "leader";
+      var when = document.createElement("span");
+      when.textContent = fmtDay(e.ts) + ", " + fmtTime(e.ts);
+      li.appendChild(label); li.appendChild(leader); li.appendChild(when);
+      hist.appendChild(li);
+    });
+  }
+  document.getElementById("pharmacy-btn").addEventListener("click", function () {
+    var input = document.getElementById("pharmacy-med");
+    var med = input.value.trim();
+    if (!med) { input.focus(); return; }
+    var log = load(PHARMACY_KEY, []);
+    log.push({ med: med, ts: Date.now() });
+    save(PHARMACY_KEY, log.slice(-500));
+    input.value = "";
+    renderPharmacy();
+  });
+  renderPharmacy();
 
   /* ---------- review generator ---------- */
   var OPENERS = [
