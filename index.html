@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>bowl. — a tasting menu for an audience of one</title>
 <meta name="description" content="The daily menu, service records, and press desk of a very serious restaurant that operates out of a kitchen and serves exactly one dog.">
-<meta name="theme-color" content="#f6f1e7">
+<meta name="theme-color" content="#f6f1e7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1912" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="bowl.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #f6f1e7;
@@ -21,6 +22,15 @@
     --faded: #6f6555;
     --rule: #d8cfbe;
     --card: #fbf8f1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #1c1912;
+      --ink: #f3ede0;
+      --faded: #a89c86;
+      --rule: #3a3327;
+      --card: #262019;
+    }
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { background: var(--paper); }
@@ -88,6 +98,18 @@
   body[data-tab="reviews"] #reviews,
   body[data-tab="reserve"] #reserve { display: block; }
 
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes tab-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
+    body[data-tab="today"]   #today,
+    body[data-tab="menu"]    #menu,
+    body[data-tab="service"] #service,
+    body[data-tab="reviews"] #reviews,
+    body[data-tab="reserve"] #reserve { animation: tab-in 0.28s ease; }
+  }
+
   nav {
     position: fixed;
     left: 0; right: 0; bottom: 0;
@@ -116,9 +138,25 @@
     transform: translateX(-50%);
     letter-spacing: 0;
   }
+  nav a:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  @media (hover: hover) {
+    nav a:not(.active):hover { color: var(--ink); }
+  }
 
   /* menu sections */
   section.course { margin-bottom: 3.2rem; }
+  #menu { counter-reset: dish; }
+  #menu section.course > ul > li { counter-increment: dish; }
+  #menu section.course > ul > li .line::before {
+    content: counter(dish, decimal-leading-zero) ".";
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--faded);
+  }
   h2 {
     text-align: center;
     font-size: 0.78rem;
@@ -163,6 +201,10 @@
     text-align: center;
     margin-top: 1.2rem;
   }
+  @media (hover: hover) {
+    .card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
+    .card:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08); transform: translateY(-1px); }
+  }
   .card h3 {
     font-size: 0.7rem;
     font-weight: 600;
@@ -192,6 +234,26 @@
     margin-bottom: 0.4rem;
   }
 
+  .portrait-frame {
+    aspect-ratio: 1;
+    max-width: 220px;
+    margin: 0 auto 0.8rem;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.8rem;
+  }
+  .portrait-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .portrait-frame img[hidden] { display: none; }
+
   button {
     font-family: inherit;
     font-size: 0.7rem;
@@ -210,6 +272,14 @@
     border: 1px solid var(--rule);
   }
   button:active { opacity: 0.75; }
+  button:focus-visible, .linkish:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  @media (hover: hover) {
+    button:hover { opacity: 0.88; }
+    .linkish:hover { color: var(--ink); }
+  }
   .linkish {
     background: none;
     border: none;
@@ -240,6 +310,50 @@
     text-align: left;
   }
   .history .leader { transform: translateY(-0.2em); }
+
+  /* service ledger: ticket look */
+  #service .card {
+    position: relative;
+    padding-top: 1.9rem;
+    padding-bottom: 1.9rem;
+    border-left-style: dashed;
+    border-right-style: dashed;
+    border-top: none;
+    border-bottom: none;
+  }
+  #service .card::before, #service .card::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 10px;
+    background-image: radial-gradient(circle at 6px 5px, var(--paper) 5px, transparent 5.5px);
+    background-size: 12px 10px;
+    background-repeat: repeat-x;
+  }
+  #service .card::before { top: -5px; }
+  #service .card::after { bottom: -5px; transform: scaleY(-1); }
+  #service .status-line,
+  #service .ledger-count,
+  #service .ledger-sub,
+  #service .small-note,
+  #service .history li {
+    font-family: ui-monospace, "Courier New", monospace;
+  }
+  #service .card h3 { font-family: "Fraunces", Georgia, serif; }
+
+  /* chalkboard special */
+  .chalkboard {
+    background: #223021;
+    border-color: #3a4a37;
+    color: #f2efe4;
+  }
+  .chalkboard h3 { color: #cfead0; }
+  .chalkboard .special-text {
+    font-family: "Caveat", cursive;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .chalkboard .small-note { color: #b9c9b6; }
 
   /* reviews */
   .review-card {
@@ -285,6 +399,10 @@
     border: 1px solid var(--rule);
     background: var(--card);
     color: var(--ink);
+  }
+  .field input:focus-visible, .field select:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
   }
   .center { text-align: center; }
 
@@ -332,6 +450,17 @@
     <p class="today-date" id="today-date"></p>
 
     <div class="card">
+      <h3>The Regular</h3>
+      <div class="portrait-frame">
+        <img id="portrait-img" alt="the regular, dining" hidden>
+        <p class="small-note" id="portrait-empty">no portrait on file. the walls are bare and the house has opinions about it.</p>
+      </div>
+      <input type="file" accept="image/*" id="portrait-input" hidden>
+      <button class="ghost" id="portrait-add">add a portrait</button>
+      <div><button class="linkish" id="portrait-remove" hidden>retire this portrait</button></div>
+    </div>
+
+    <div class="card chalkboard">
       <h3>Tonight&rsquo;s Special</h3>
       <p class="special-text" id="daily-special"></p>
       <p class="small-note">available while supplies last (they will not last)</p>
@@ -439,6 +568,25 @@
       </ul>
     </section>
 
+    <section class="course">
+      <h2>The Pharmacy</h2>
+      <p class="service-note">administered with cheese, under protest, precisely on schedule</p>
+      <ul>
+        <li>
+          <div class="line"><span class="dish">Heartworm Chew</span><span class="leader"></span><span class="price">monthly, non-negotiable</span></div>
+          <p class="desc">disguised as a treat. fooling no one. eaten anyway, out of professional courtesy.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">Joint Supplement</span><span class="leader"></span><span class="price">daily, with breakfast</span></div>
+          <p class="desc">folded into the first pressing. undetected, allegedly.</p>
+        </li>
+        <li>
+          <div class="line"><span class="dish">The Pill in the Cheese</span><span class="leader"></span><span class="price">as prescribed</span></div>
+          <p class="desc">a compounding of two great house traditions: medicine, and the Cheese Tax. see: Service, for the official record.</p>
+        </li>
+      </ul>
+    </section>
+
     <section class="course policies">
       <h2>House Policies</h2>
       <p><strong>dress code</strong> &mdash; collar required. jingling tags considered formalwear.</p>
@@ -474,6 +622,23 @@
       <p class="ledger-sub">taxes levied today</p>
       <p class="small-note" id="cheese-lifetime"></p>
       <button id="cheese-btn">levy cheese tax</button>
+    </div>
+
+    <div class="card">
+      <h3>The Pharmacy</h3>
+      <p class="status-line" id="pharmacy-status"></p>
+      <div class="field" style="margin-top:1rem">
+        <label for="pharmacy-med">medication</label>
+        <input id="pharmacy-med" list="med-suggestions" placeholder="e.g. heartworm chew" autocomplete="off">
+        <datalist id="med-suggestions">
+          <option value="Heartworm Chew"></option>
+          <option value="Joint Supplement"></option>
+          <option value="Allergy Pill"></option>
+          <option value="Flea &amp; Tick"></option>
+        </datalist>
+      </div>
+      <button id="pharmacy-btn">log dose</button>
+      <ul class="history" id="pharmacy-history"></ul>
     </div>
 
     <div class="card">
@@ -587,6 +752,86 @@
   document.getElementById("today-date").textContent =
     now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
+  /* ---------- portrait gallery ---------- */
+  var GALLERY_KEY = "bowl.gallery";
+  var MAX_PHOTOS = 12;
+  var MAX_DIM = 900;
+
+  function loadGallery() {
+    try { return JSON.parse(localStorage.getItem(GALLERY_KEY)) || []; }
+    catch (e) { return []; }
+  }
+  function saveGallery(arr) {
+    try { localStorage.setItem(GALLERY_KEY, JSON.stringify(arr)); return true; }
+    catch (e) { return false; }
+  }
+
+  function renderPortrait() {
+    var gallery = loadGallery();
+    var img = document.getElementById("portrait-img");
+    var empty = document.getElementById("portrait-empty");
+    var removeBtn = document.getElementById("portrait-remove");
+    if (!gallery.length) {
+      img.hidden = true;
+      img.removeAttribute("src");
+      delete img.dataset.idx;
+      empty.hidden = false;
+      removeBtn.hidden = true;
+      return;
+    }
+    var idx = Math.floor(Math.random() * gallery.length);
+    img.src = gallery[idx].data;
+    img.dataset.idx = idx;
+    img.hidden = false;
+    empty.hidden = true;
+    removeBtn.hidden = false;
+  }
+
+  document.getElementById("portrait-add").addEventListener("click", function () {
+    document.getElementById("portrait-input").click();
+  });
+
+  document.getElementById("portrait-input").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var imgEl = new Image();
+      imgEl.onload = function () {
+        var scale = Math.min(1, MAX_DIM / Math.max(imgEl.width, imgEl.height));
+        var w = Math.round(imgEl.width * scale);
+        var h = Math.round(imgEl.height * scale);
+        var canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(imgEl, 0, 0, w, h);
+        var dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        var gallery = loadGallery();
+        gallery.push({ id: Date.now(), data: dataUrl });
+        if (gallery.length > MAX_PHOTOS) gallery = gallery.slice(gallery.length - MAX_PHOTOS);
+        if (saveGallery(gallery)) {
+          renderPortrait();
+        } else {
+          alert("couldn't save that portrait — storage is full. try retiring an old one first.");
+        }
+      };
+      imgEl.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("portrait-remove").addEventListener("click", function () {
+    var img = document.getElementById("portrait-img");
+    var idx = Number(img.dataset.idx);
+    var gallery = loadGallery();
+    gallery.splice(idx, 1);
+    saveGallery(gallery);
+    renderPortrait();
+  });
+
+  renderPortrait();
+
   /* ---------- storage helpers ---------- */
   function load(key, fallback) {
     try { return JSON.parse(localStorage.getItem(key)) || fallback; }
@@ -692,6 +937,48 @@
 
   renderService();
   renderCheese();
+
+  /* ---------- pharmacy ---------- */
+  var PHARMACY_KEY = "bowl.pharmacyLog";
+  function renderPharmacy() {
+    var log = load(PHARMACY_KEY, []);
+    var status = document.getElementById("pharmacy-status");
+    var last = log[log.length - 1];
+    if (last) {
+      status.innerHTML = "last dose: <em>" + last.med + "</em>, " + fmtDay(last.ts) + " at " + fmtTime(last.ts) + ".";
+    } else {
+      status.textContent = "no doses logged yet — the medicine cabinet judges silently.";
+    }
+
+    var hist = document.getElementById("pharmacy-history");
+    hist.innerHTML = "";
+    var recent = log.slice(-6).reverse();
+    if (!recent.length) {
+      hist.innerHTML = '<li><span style="font-style:italic">the pharmacy log is empty.</span></li>';
+    }
+    recent.forEach(function (e) {
+      var li = document.createElement("li");
+      var label = document.createElement("span");
+      label.textContent = e.med;
+      var leader = document.createElement("span");
+      leader.className = "leader";
+      var when = document.createElement("span");
+      when.textContent = fmtDay(e.ts) + ", " + fmtTime(e.ts);
+      li.appendChild(label); li.appendChild(leader); li.appendChild(when);
+      hist.appendChild(li);
+    });
+  }
+  document.getElementById("pharmacy-btn").addEventListener("click", function () {
+    var input = document.getElementById("pharmacy-med");
+    var med = input.value.trim();
+    if (!med) { input.focus(); return; }
+    var log = load(PHARMACY_KEY, []);
+    log.push({ med: med, ts: Date.now() });
+    save(PHARMACY_KEY, log.slice(-500));
+    input.value = "";
+    renderPharmacy();
+  });
+  renderPharmacy();
 
   /* ---------- review generator ---------- */
   var OPENERS = [
